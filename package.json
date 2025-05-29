@@ -28,6 +28,7 @@
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
+    "@ljharb/tsconfig": "^0.3.2",
     "@types/busboy": "^1.5.4"
   }
 }
