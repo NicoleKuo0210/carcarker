@@ -3,77 +3,105 @@
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import WaterLedButtons from "@/ui/WaterLedButtons"
-
-console.log("🔍 Project ID:", process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
+import WaterLedButtons from "@/ui/WaterLedButtons";
+import EditName from "@/ui/EditName";
 
 export default function Home() {
   const [data, setData] = useState<null | {
     imageUrl: string;
     temperature: string;
     humidity: string;
+    moisture: string;
+    illuminance: string;
+    timestamp: { seconds: number };
+    message?: string;
   }>(null);
 
   useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const docRef = doc(db, "esp32_logs", "latest");
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setData(docSnap.data() as any);
-      } else {
-        console.log("No such document!");
+    const fetchData = async () => {
+      try {
+        const docRef = doc(db, "esp32_logs", "latest");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setData(docSnap.data() as any);
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error fetching document:", error);
       }
-    } catch (error) {
-      console.error("Error fetching document:", error);
-    }
-  };
-
-  fetchData();
-}, []);
+    };
+    fetchData();
+  }, []);
 
   if (!data) return <p className="p-4">Loading...</p>;
 
-  const temperature = parseFloat(data.temperature);
-  const humidity = parseFloat(data.humidity);
+  const temperature = parseFloat(data.temperature || "15");
+  const humidity = parseFloat(data.humidity || "50");
+  const moisture = parseFloat(data.moisture || "50");
+  const illuminance = parseFloat(data.illuminance || "20");
+  const imageUrl = data.imageUrl || "https://via.placeholder.com/400x300";
+  const message = data.message || "No message.";
+  const updateTime = new Date((data.timestamp?.seconds || 0) * 1000).toLocaleString();
 
   return (
-    <div className="h-screen w-full bg-white p-2">
-      <div className="h-full w-full p-2 pl-6 pr-6  border-4 border-white rounded-2xl bg-cyan-700">
-        <p className="w-full font-bold font-serif text-3xl text-white text-center p-4"> My Plant </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 h-full gap-6 items-stretch">
-          <div className="w-full max-h-120 bg-white shadow-md rounded-xl p-6 flex flex-col">
-            <div>
-              <p className="text-lg font-medium mb-1 text-gray-600">🌡️ Temperature</p>
-              <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                <div
-                  className="bg-red-500 h-4 transition-all duration-300"
-                  style={{ width: `${(temperature / 50) * 100}%` }}
-                />
-              </div>
-              <p className="mt-1 text-right text-sm text-gray-600">{temperature} °C</p>
-            </div>
+    <div className="min-h-screen w-full bg-violet-200 p-4 pt-6">
+      <EditName/>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Left panel */}
+        <div className="p-6 rounded-xl shadow-xl space-y-6 bg-transparent">
+          <div className="flex justify-around bg-gray-100 p-4 rounded-xl text-center shadow-md">
             <div>
-              <p className="text-lg font-medium mb-1 text-gray-600">💧 Humidity</p>
-              <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                <div
-                  className="bg-blue-500 h-4 transition-all duration-300"
-                  style={{ width: `${(humidity / 100) * 100}%` }}
-                />
-              </div>
-              <p className="mt-1 text-right text-sm text-gray-600">{humidity} %</p>
+              <p className="text-lg font-semibold">🌡️Temperature</p>
+              <p className="text-xl font-bold">{temperature} °C</p>
             </div>
-            <WaterLedButtons/>
+            <div className="border-l border-gray-400 h-12" />
+            <div>
+              <p className="text-lg font-semibold">💧Humidity</p>
+              <p className="text-xl font-bold">{humidity} %</p>
+            </div>
           </div>
 
-          <div className="h-full w-full">
-            <img
-              src={data.imageUrl}
-              alt="ESP32 Snapshot"
-              className="w-full h-auto rounded-xl border"
-            />
+          <div>
+            <p className="text-lg font-medium mb-1">🌱 Moisture:</p>
+            <div className="w-full bg-white rounded-full h-6 overflow-hidden border-4 border-white shadow-inner">
+              <div
+                className="bg-cyan-400 h-5 transition-all duration-300 shadow-md"
+                style={{ width: `${moisture}%` }}
+              />
+            </div>
+            <p className="text-sm text-right">{moisture} %</p>
           </div>
+
+          <div>
+            <p className="text-lg font-medium mb-1">🌞 Illuminance:</p>
+            <div className="w-full bg-white rounded-full h-6 overflow-hidden border-4 border-white shadow-inner">
+              <div
+                className="bg-yellow-300 h-5 transition-all duration-300 shadow-md"
+                style={{ width: `${illuminance}%` }}
+              />
+            </div>
+            <p className="text-sm text-right">{illuminance} %</p>
+          </div>
+
+          <WaterLedButtons />
+
+          <p className="text-center text-md font-semibold mt-4">
+            Update Time: <span className="font-normal">{updateTime}</span>
+          </p>
+        </div>
+
+        {/* Right panel */}
+        <div className="bg-white p-6 rounded-xl shadow-xl flex flex-col items-center justify-between space-y-4">
+          <div className="bg-gray-100 rounded-xl p-3 w-full text-center shadow">
+            <p className="text-md">{message}</p>
+          </div>
+          <img
+            src={imageUrl}
+            alt="ESP32 Snapshot"
+            className="w-full h-auto max-h-[400px] rounded-xl border object-cover shadow-lg"
+          />
         </div>
       </div>
     </div>

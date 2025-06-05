@@ -10,7 +10,6 @@ export default function WaterLedButtons() {
   const [ledState, setLedState] = useState<"on" | "off">("off");
   const [controlState, setControlState] = useState<"auto" | "manual">("manual");
 
-  // Load document ID and initial values
   useEffect(() => {
     const getDocId = async () => {
       try {
@@ -34,7 +33,6 @@ export default function WaterLedButtons() {
     getDocId();
   }, []);
 
-  // Toggle motor or LED state
   const toggleControl = async (type: "motor_control" | "led_control") => {
     if (!docId || controlState === "auto") return;
 
@@ -44,8 +42,8 @@ export default function WaterLedButtons() {
           ? "off"
           : "on"
         : ledState === "on"
-        ? "off"
-        : "on";
+          ? "off"
+          : "on";
 
     try {
       const docRef = doc(db, "esp32_controls", docId);
@@ -63,7 +61,6 @@ export default function WaterLedButtons() {
     }
   };
 
-  // Toggle auto/manual state
   const toggleStateMode = async () => {
     if (!docId) return;
     const newState = controlState === "manual" ? "auto" : "manual";
@@ -84,43 +81,46 @@ export default function WaterLedButtons() {
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-700">
-          Mode:{" "}
-          <span className="font-semibold">
-            {controlState === "auto" ? "Auto" : "Manual"}
-          </span>
+          Mode: <span className="font-semibold">{controlState === "auto" ? "Auto" : "Manual"}</span>
         </p>
         <button
-          className={`px-3 py-1 rounded text-sm text-white ${
-            controlState === "manual"
-              ? "bg-blue-500 hover:bg-blue-600"
-              : "bg-gray-500 hover:bg-gray-600"
-          }`}
+          className={`px-3 py-1 rounded text-sm text-white shadow-md transition-all duration-300 ${controlState === "manual" ? "bg-emerald-400 hover:bg-emerald-500" : "bg-emerald-600 hover:bg-emerald-500"
+            }`}
           onClick={toggleStateMode}
           disabled={!docId}
         >
           Switch to {controlState === "manual" ? "Auto" : "Manual"}
         </button>
       </div>
+      <div className="flex gap-4">
+        <button
+          className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-4 border-white shadow-inner text-white text-lg font-semibold transition-all duration-300 shadow-lg ${
+            isDisabled
+              ? "bg-gray-400 cursor-not-allowed"
+              : motorState === "on"
+                ? "bg-indigo-200 hover:bg-indigo-200"
+                : "bg-indigo-300 hover:bg-indigo-200"
+            }`}
+          onClick={() => toggleControl("motor_control")}
+          disabled={isDisabled || !docId}
+        >
+          {motorState === "on" ? "💧 Motor On" : "💧 Motor Off"}
+        </button>
 
-      <button
-        className={`w-full px-4 py-2 rounded text-white transition ${
-          isDisabled ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green-600"
-        }`}
-        onClick={() => toggleControl("motor_control")}
-        disabled={isDisabled || !docId}
-      >
-        {motorState === "on" ? "Turn Motor Off" : "Turn Motor On"}
-      </button>
-
-      <button
-        className={`w-full px-4 py-2 rounded text-white transition ${
-          isDisabled ? "bg-gray-400 cursor-not-allowed" : "bg-yellow-500 hover:bg-yellow-600"
-        }`}
-        onClick={() => toggleControl("led_control")}
-        disabled={isDisabled || !docId}
-      >
-        {ledState === "on" ? "Turn LED Off" : "Turn LED On"}
-      </button>
+        <button
+          className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-4 border-white shadow-inner text-white text-lg font-semibold transition-all duration-300 shadow-lg ${
+            isDisabled
+              ? "bg-gray-400 cursor-not-allowed"
+              : ledState === "on"
+                ? "bg-pink-200 hover:bg-pink-200"
+                : "bg-pink-300 hover:bg-pink-200"
+            }`}
+          onClick={() => toggleControl("led_control")}
+          disabled={isDisabled || !docId}
+        >
+          {ledState === "on" ? "💡 LED On" : "💡 LED Off"}
+        </button>
+      </div>
     </div>
   );
 }
