@@ -28,6 +28,9 @@ app.post('/upload', (req: Request, res: Response) => {
     mimetype?: string;
     temperature?: string;
     humidity?: string;
+    illuminance?: string;
+    moisture?: string;
+    message?: string;
   } = {};
   busboy.on(
     'file',
@@ -58,7 +61,7 @@ app.post('/upload', (req: Request, res: Response) => {
   );
 
   busboy.on('field', (fieldname, value) => {
-    metadata[fieldname as 'temperature' | 'humidity'] = value;
+    metadata[fieldname as 'temperature' | 'humidity' | 'illuminance' | 'moisture' | 'message' ] = value;
     console.log(`Field received: ${fieldname} = ${value}`);
   });
 
@@ -83,11 +86,14 @@ app.post('/upload', (req: Request, res: Response) => {
         public: true,
       });
 
-      const imageUrl = `https://storage.googleapis.com/${bucket.name}/${filename}`;
+      const imageUrl = `https://storage.googleapis.com/${bucket.name}/${filename}?time=${Date.now()}`;
 
       await db.collection('esp32_logs').doc('latest').set({
         temperature: metadata.temperature,
         humidity: metadata.humidity,
+        moisture: metadata.moisture,
+        illuminance: metadata.illuminance,
+        message: metadata.message,
         imageUrl,
         timestamp: admin.firestore.FieldValue.serverTimestamp(),
       });
@@ -114,13 +120,39 @@ app.post('/upload', (req: Request, res: Response) => {
   return;
 });
 
+app.get('/controls', async (req: Request, res: Response) => {
+  try {
+    const doc = await db.collection('esp32_controls').doc('CYWo758dq4hQ5MMOrbrt').get();
+    if (!doc.exists) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+
+    const data = doc.data();
+    return res.status(200).json(data);
+  } catch (err) {
+    console.error('Error fetching document:', err);
+    return res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
+app.post('/updateControls', async (req, res) => {
+  try {
+    const ref = db.collection('esp32_controls').doc('CYWo758dq4hQ5MMOrbrt');
+    await ref.update({ motor_control: "off" });
+    return res.status(200).send("motor_control set to off");
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send("Failed to update");
+  }
+});
+
 export const api = functions.https.onRequest((req, res) => {
   // This enables `req.rawBody`
   if (req.method === 'POST' && req.headers['content-type']?.includes('multipart/form-data')) {
-    // nothing extra needed here
   }
-  return app(req, res); // pass to Express
+  return app(req, res); 
 });
+
 export const config = {
   api: {
     bodyParser: false, // needed to avoid breaking busboy

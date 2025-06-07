@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import WaterLedButtons from "@/ui/WaterLedButtons";
 import EditName from "@/ui/EditName";
@@ -17,35 +17,34 @@ export default function Home() {
     message?: string;
   }>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const docRef = doc(db, "esp32_logs", "latest");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setData(docSnap.data() as any);
-        } else {
-          console.log("No such document!");
-        }
-      } catch (error) {
-        console.error("Error fetching document:", error);
-      }
-    };
-    fetchData();
-  }, []);
+useEffect(() => {
+  const docRef = doc(db, "esp32_logs", "latest");
+
+  const unsubscribe = onSnapshot(docRef, (docSnap) => {
+    if (docSnap.exists()) {
+      setData(docSnap.data() as any);
+    } else {
+      console.log("No such document!");
+    }
+  }, (error: any) => {
+    console.error("Error in real-time subscription:", error);
+  });
+
+  return () => unsubscribe(); // cleanup on unmount
+}, []);
 
   if (!data) return <p className="p-4">Loading...</p>;
 
-  const temperature = parseFloat(data.temperature || "15");
-  const humidity = parseFloat(data.humidity || "50");
-  const moisture = parseFloat(data.moisture || "50");
-  const illuminance = parseFloat(data.illuminance || "20");
+  const temperature = parseFloat(data.temperature || "0");
+  const humidity = parseFloat(data.humidity || "0");
+  const moisture = parseFloat(data.moisture || "0");
+  const illuminance = parseFloat(data.illuminance || "0");
   const imageUrl = data.imageUrl || "https://via.placeholder.com/400x300";
   const message = data.message || "No message.";
   const updateTime = new Date((data.timestamp?.seconds || 0) * 1000).toLocaleString();
 
   return (
-    <div className="min-h-screen w-full bg-violet-200 p-4 pt-6">
+    <div className="min-h-screen w-full bg-violet-200 p-4 pt-6 text-gray-700">
       <EditName/>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -1,6 +1,6 @@
 "use client";
 
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
+import { collection, doc, updateDoc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useEffect, useState } from "react";
 
@@ -11,27 +11,25 @@ export default function WaterLedButtons() {
   const [controlState, setControlState] = useState<"auto" | "manual">("manual");
 
   useEffect(() => {
-    const getDocId = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "esp32_controls"));
-        if (!querySnapshot.empty) {
-          const docSnap = querySnapshot.docs[0];
-          setDocId(docSnap.id);
-          const data = docSnap.data();
-          if (data.motor_control) setMotorState(data.motor_control);
-          if (data.led_control) setLedState(data.led_control);
-          if (data.state === "auto" || data.state === "manual") {
-            setControlState(data.state);
-          }
-        } else {
-          console.error("No documents found in esp32_controls");
-        }
-      } catch (error) {
-        console.error("Error fetching document ID:", error);
+  const unsubscribe = onSnapshot(collection(db, "esp32_controls"), (snapshot) => {
+    if (!snapshot.empty) {
+      const docSnap = snapshot.docs[0];
+      setDocId(docSnap.id);
+      const data = docSnap.data();
+      if (data.motor_control) setMotorState(data.motor_control);
+      if (data.led_control) setLedState(data.led_control);
+      if (data.mode === "auto" || data.mode === "manual") {
+        setControlState(data.mode);
       }
-    };
-    getDocId();
-  }, []);
+    } else {
+      console.error("No documents found in esp32_controls");
+    }
+  }, (error) => {
+    console.error("Error in real-time listener:", error);
+  });
+  return () => unsubscribe(); // clean up on unmount
+}, []);
+
 
   const toggleControl = async (type: "motor_control" | "led_control") => {
     if (!docId || controlState === "auto") return;
@@ -67,7 +65,7 @@ export default function WaterLedButtons() {
     try {
       const docRef = doc(db, "esp32_controls", docId);
       await updateDoc(docRef, {
-        state: newState,
+        mode: newState,
       });
       setControlState(newState);
     } catch (error) {
