@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import WaterLedButtons from "@/ui/WaterLedButtons";
-import EditName from "@/ui/EditName";
+import WaterLedButtons from "@/components/WaterLedButtons";
+import EditName from "@/components/EditName";
+import IntimacyBar from "@/components/IntimacyBar";
 
 export default function Home() {
   const [data, setData] = useState<null | {
@@ -44,13 +45,13 @@ useEffect(() => {
   const updateTime = new Date((data.timestamp?.seconds || 0) * 1000).toLocaleString();
 
   return (
-    <div className="min-h-screen w-full bg-violet-200 p-4 pt-6 text-gray-700">
+    <div className="min-h-screen w-full bg-gradient-to-b from-violet-200 to-indigo-200 p-4 pt-6 text-gray-700">
       <EditName/>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="p-2 grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left panel */}
-        <div className="p-6 rounded-xl shadow-xl space-y-6 bg-transparent">
-          <div className="flex justify-around bg-gray-100 p-4 rounded-xl text-center shadow-md">
+        <div className="p-8 rounded-xl shadow-xl space-y-6 bg-gradient-to-b from-gray-100 via-transparent">
+          <div className="flex justify-around bg-gradient-to-b from-gray-100 via-transparent p-4 rounded-xl text-center shadow-md">
             <div>
               <p className="text-lg font-semibold">🌡️Temperature</p>
               <p className="text-xl font-bold">{temperature} °C</p>
@@ -63,25 +64,25 @@ useEffect(() => {
           </div>
 
           <div>
-            <p className="text-lg font-medium mb-1">🌱 Moisture:</p>
+            <p className="text-lg font-bold mb-1">🌱 Moisture</p>
             <div className="w-full bg-white rounded-full h-6 overflow-hidden border-4 border-white shadow-inner">
               <div
-                className="bg-cyan-400 h-5 transition-all duration-300 shadow-md"
+                className="bg-gradient-to-r from-amber-700 via-cyan-500 to-cyan-400 h-5 transition-all duration-300 shadow-md"
                 style={{ width: `${moisture}%` }}
               />
             </div>
-            <p className="text-sm text-right">{moisture} %</p>
+            <p className="pt-2 text-sm text-right">{moisture} %</p>
           </div>
 
           <div>
-            <p className="text-lg font-medium mb-1">🌞 Illuminance:</p>
+            <p className="text-lg font-bold">🌞 Illuminance</p>
             <div className="w-full bg-white rounded-full h-6 overflow-hidden border-4 border-white shadow-inner">
               <div
-                className="bg-yellow-300 h-5 transition-all duration-300 shadow-md"
+                className="bg-gradient-to-r from-sky-800 via-yellow-400 to-yellow-200 h-5 transition-all duration-300 shadow-md"
                 style={{ width: `${illuminance}%` }}
               />
             </div>
-            <p className="text-sm text-right">{illuminance} %</p>
+            <p className="pt-2 text-sm text-right">{illuminance} %</p>
           </div>
 
           <WaterLedButtons />
@@ -92,15 +93,16 @@ useEffect(() => {
         </div>
 
         {/* Right panel */}
-        <div className="bg-white p-6 rounded-xl shadow-xl flex flex-col items-center justify-between space-y-4">
-          <div className="bg-gray-100 rounded-xl p-3 w-full text-center shadow">
-            <p className="text-md">{message}</p>
+        <div className="bg-gradient-to-b from-gray-100 via-transparent p-8 rounded-xl shadow-xl flex flex-col items-center space-y-4">
+          <div className="bg-gradient-to-b from-gray-100 via-transparent rounded-xl p-3 w-full text-center shadow">
+            <p className="text-xl">{message}</p>
           </div>
           <img
             src={imageUrl}
             alt="ESP32 Snapshot"
-            className="w-full h-auto max-h-[400px] rounded-xl border object-cover shadow-lg"
+            className="w-full h-auto max-h-[400px] rounded-xl border-4 border-white object-cover shadow-lg"
           />
+          <IntimacyBar />
         </div>
       </div>
     </div>

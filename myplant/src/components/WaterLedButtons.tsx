@@ -78,11 +78,11 @@ export default function WaterLedButtons() {
   return (
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-700">
-          Mode: <span className="font-semibold">{controlState === "auto" ? "Auto" : "Manual"}</span>
+        <p className="text-l text-gray-700">
+          Mode: <span className={`font-semibold ${controlState === "manual" ? "text-emerald-600" : "text-sky-600"}`}>{controlState === "auto" ? "Auto" : "Manual"}</span>
         </p>
         <button
-          className={`px-3 py-1 rounded text-sm text-white shadow-md transition-all duration-300 ${controlState === "manual" ? "bg-emerald-400 hover:bg-emerald-500" : "bg-emerald-600 hover:bg-emerald-500"
+          className={`px-4 py-2 rounded text-sm font-semibold text-white shadow-md transition-all duration-300 ${controlState === "manual" ? "bg-gradient-to-t from-emerald-500 to-emerald-400 hover:bg-emerald-500" : "bg-gradient-to-t from-sky-500 to-sky-600 hover:bg-sky-500"
             }`}
           onClick={toggleStateMode}
           disabled={!docId}
@@ -92,12 +92,12 @@ export default function WaterLedButtons() {
       </div>
       <div className="flex gap-4">
         <button
-          className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-4 border-white shadow-inner text-white text-lg font-semibold transition-all duration-300 shadow-lg ${
+          className={`bg-gradient-to-b from-indigo-200 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-4 border-white shadow-inner text-white text-lg font-semibold transition-all duration-300 shadow-lg ${
             isDisabled
               ? "bg-gray-400 cursor-not-allowed"
               : motorState === "on"
-                ? "bg-indigo-200 hover:bg-indigo-200"
-                : "bg-indigo-300 hover:bg-indigo-200"
+                ? "bg-indigo-300 hover:bg-indigo-300"
+                : "bg-indigo-400 hover:bg-indigo-300"
             }`}
           onClick={() => toggleControl("motor_control")}
           disabled={isDisabled || !docId}
@@ -106,12 +106,12 @@ export default function WaterLedButtons() {
         </button>
 
         <button
-          className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-4 border-white shadow-inner text-white text-lg font-semibold transition-all duration-300 shadow-lg ${
+          className={`bg-gradient-to-b from-pink-200 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-4 border-white shadow-inner text-white text-lg font-semibold transition-all duration-300 shadow-lg ${
             isDisabled
               ? "bg-gray-400 cursor-not-allowed"
               : ledState === "on"
-                ? "bg-pink-200 hover:bg-pink-200"
-                : "bg-pink-300 hover:bg-pink-200"
+                ? "bg-pink-300 hover:bg-pink-300"
+                : "bg-pink-400 hover:bg-pink-300"
             }`}
           onClick={() => toggleControl("led_control")}
           disabled={isDisabled || !docId}
