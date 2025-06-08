@@ -20,12 +20,16 @@
   "homepage": "https://github.com/NicoleKuo0210/carcarker#readme",
   "description": "",
   "dependencies": {
+    "@tailwindcss/postcss": "^4.1.8",
+    "all": "^0.0.0",
     "busboy": "^1.6.0",
     "express": "^5.1.0",
     "firebase": "^11.8.1",
     "next": "^15.1.8",
+    "postcss": "^8.5.4",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "tailwindcss": "^4.1.8"
   },
   "devDependencies": {
     "@ljharb/tsconfig": "^0.3.2",

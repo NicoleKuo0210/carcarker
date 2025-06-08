@@ -45,7 +45,7 @@ useEffect(() => {
   const updateTime = new Date((data.timestamp?.seconds || 0) * 1000).toLocaleString();
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-violet-200 to-indigo-200 p-4 pt-6 text-gray-700">
+    <div className="font-sans min-h-screen w-full bg-gradient-to-b from-violet-200 to-indigo-200 p-4 pt-6 text-gray-700">
       <EditName/>
 
       <div className="p-2 grid grid-cols-1 md:grid-cols-2 gap-6">

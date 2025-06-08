@@ -54,7 +54,7 @@ export default function EditName() {
 
   return (
     <div className="flex items-center justify-center mb-6 gap-2">
-      <h1 className="text-4xl font-bold flex items-center gap-2">
+      <h1 className="font-serif text-4xl font-bold flex items-center gap-2">
         🪴
         {isEditing ? (
           <input
