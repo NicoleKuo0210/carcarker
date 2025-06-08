@@ -24,7 +24,7 @@ export default function IntimacyBar() {
       setLoading(false);
     };
     fetchData();
-  }, []);
+  });
 
   const handleClick = async () => {
     let newIntimacy = intimacy + 1;

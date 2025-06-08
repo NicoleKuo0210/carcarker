@@ -8,7 +8,9 @@ import EditName from "@/components/EditName";
 import IntimacyBar from "@/components/IntimacyBar";
 
 export default function Home() {
-  const [data, setData] = useState<null | {
+  const [data, setData] = useState<PlantData | null>(null);
+
+  type PlantData = {
     imageUrl: string;
     temperature: string;
     humidity: string;
@@ -16,26 +18,26 @@ export default function Home() {
     illuminance: string;
     timestamp: { seconds: number };
     message?: string;
-  }>(null);
+  };
 
-useEffect(() => {
-  const docRef = doc(db, "esp32_logs", "latest");
+  useEffect(() => {
+    const docRef = doc(db, "esp32_logs", "latest");
 
-  const unsubscribe = onSnapshot(docRef, (docSnap) => {
-    if (docSnap.exists()) {
-      setData(docSnap.data() as any);
-    } else {
-      console.log("No such document!");
-    }
-  }, (error: any) => {
-    console.error("Error in real-time subscription:", error);
-  });
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        setData(docSnap.data() as PlantData);
+      } else {
+        console.log("No such document!");
+      }
+    }, (error: unknown) => {
+      console.error("Error in real-time subscription:", error);
+    });
 
-  return () => unsubscribe(); // cleanup on unmount
-}, []);
+    return () => unsubscribe(); // cleanup on unmount
+  }, []);
 
   if (!data) return <p className="p-4">Loading...</p>;
-
+  
   const temperature = parseFloat(data.temperature || "0");
   const humidity = parseFloat(data.humidity || "0");
   const moisture = parseFloat(data.moisture || "0");
@@ -46,7 +48,7 @@ useEffect(() => {
 
   return (
     <div className="font-sans min-h-screen w-full bg-gradient-to-b from-violet-200 to-indigo-200 p-4 pt-6 text-gray-700">
-      <EditName/>
+      <EditName />
 
       <div className="p-2 grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left panel */}
