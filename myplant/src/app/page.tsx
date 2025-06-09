@@ -54,14 +54,14 @@ export default function Home() {
         {/* Left panel */}
         <div className="p-8 rounded-xl shadow-xl space-y-6 bg-gradient-to-b from-gray-100 via-transparent">
           <div className="flex justify-around bg-gradient-to-b from-gray-100 via-transparent p-4 rounded-xl text-center shadow-md">
-            <div>
+            <div className="pl-2">
               <p className="text-lg font-semibold">🌡️Temperature</p>
-              <p className="text-xl font-bold">{temperature} °C</p>
+              <p className="text-xl font-bold pl-3">{temperature} °C</p>
             </div>
             <div className="border-l border-gray-400 h-12" />
-            <div>
-              <p className="text-lg font-semibold">💧Humidity</p>
-              <p className="text-xl font-bold">{humidity} %</p>
+            <div className="pr-12">
+              <p className="text-lg font-semibold">💧Humidity  </p>
+              <p className="text-xl font-bold pl-3">{humidity} %</p>
             </div>
           </div>
 

@@ -10,15 +10,20 @@ export default function IntimacyBar() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const docRef = doc(db, 'esp32_logs', 'latest');
+  const docRef1 = doc(db, 'esp32_controls', 'CYWo758dq4hQ5MMOrbrt');
+  const docRef2 = doc(db, 'esp32_logs', 'latest');
 
   useEffect(() => {
     const fetchData = async () => {
-      const snapshot = await getDoc(docRef);
-      if (snapshot.exists()) {
-        const data = snapshot.data();
+      const snapshot1 = await getDoc(docRef1);
+      if (snapshot1.exists()) {
+        const data = snapshot1.data();
         setIntimacy(data.intimacy ?? 0);
         setLevel(data.level ?? 1);
+      }
+      const snapshot2 = await getDoc(docRef2);
+      if (snapshot2.exists()) {
+        const data = snapshot2.data();
         setMessage(data.message ?? "Hello!");
       }
       setLoading(false);
@@ -31,15 +36,18 @@ export default function IntimacyBar() {
     let newLevel = level;
     let newMessage: string = message;
 
-    if (newIntimacy >= 100) {
+    if (newIntimacy >= 5*level) {
       newIntimacy = 0;
       newLevel += 1;
       newMessage = "I love you, too 🥰";
     }
 
-    await updateDoc(docRef, {
+    await updateDoc(docRef1, {
       intimacy: newIntimacy,
       level: newLevel,
+    });
+
+    await updateDoc(docRef2, {
       message: newMessage,
     });
 
@@ -56,7 +64,7 @@ export default function IntimacyBar() {
       <div className="flex-1 bg-gray-100 h-6 rounded border-4 border-white overflow-hidden shadow-md">
         <div
           className="bg-gradient-to-r from-pink-300 to-pink-400 h-full transition-all duration-300"
-          style={{ width: `${intimacy}%` }}
+          style={{ width: `${intimacy*20/level}%` }}
         />
       </div>
       <button
