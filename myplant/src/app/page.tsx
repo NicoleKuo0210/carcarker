@@ -1,6 +1,5 @@
 "use client";
 
-import { Head } from "next/document";
 import { useEffect, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -48,11 +47,6 @@ export default function Home() {
   const updateTime = new Date((data.timestamp?.seconds || 0) * 1000).toLocaleString();
 
   return (
-    <>
-      <Head>
-        <title>EE-Plant</title>
-        <link rel="icon" href="/icon.png" />
-      </Head>
       <div className="font-sans min-h-screen w-full bg-gradient-to-b from-violet-200 to-indigo-200 p-4 pt-6 text-gray-700">
         <EditName />
 
@@ -114,6 +108,5 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </>
   );
 }
