@@ -10,7 +10,7 @@ export default function EditName() {
   useEffect(() => {
     const fetchName = async () => {
       try {
-        const docRef = doc(db, "esp32_logs", "latest");
+        const docRef = doc(db, "esp32_controls", "CYWo758dq4hQ5MMOrbrt");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
@@ -37,7 +37,7 @@ export default function EditName() {
     setPlantName(trimmed);
     setIsEditing(false);
     try {
-      const docRef = doc(db, "esp32_logs", "latest");
+      const docRef = doc(db, "esp32_controls", "CYWo758dq4hQ5MMOrbrt");
       await updateDoc(docRef, { name: trimmed });
     } catch (error) {
       console.error("Error saving plant name:", error);
